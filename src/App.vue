@@ -1,11 +1,11 @@
 <template>
-  <Renderer ref="renderer" resize="window" antialias :orbit-ctrl="{ autoRotate: true, enableDamping: true, dampingFactor: 0.05 }" pointer shadow>
+  <Renderer ref="renderer" resize="window" antialias :orbit-ctrl="{ autoRotate: false, enableDamping: true, dampingFactor: 0.05 }" pointer shadow>
     <Camera :position="{ x: 0, y: 0, z: 10 }" />
     <Scene background="#000000" >
       <PointLight ref="light" cast-shadow :shadow-map-size="{ width: 1024, height: 1024 }" :intensity="1" :position="{ x: 0, y: 0, z: 0 } ">
         <Sphere :radius="0.1" />
       </PointLight>        
-      <RectAreaLight color="#ff00ff" :intensity="10" :position="{ x: 0, y: 3, z: 1 }" v-bind="rectLightsProps" />
+      <RectAreaLight color="#ffffff" :intensity="10" :position="{ x: 0, y: 3, z: 1 }" v-bind="rectLightsProps" />
       <Plane :width="10" :height="10" :rotation="{ x: -Math.PI / 2 }" :position="{ y: -1.05 }" receive-shadow>
         <StandardMaterial :props="{ displacementScale: 0.2, roughness: 1, metalness: 0 }" >
           <Texture :props="texturesProps" src="/assets/textures/PolishedConcrete01_4K_BaseColor.png" />
@@ -15,7 +15,7 @@
           <Texture :props="texturesProps" src="/assets/textures/PolishedConcrete01_4K_Height.png" name="aoMap" />
         </StandardMaterial>
       </Plane>
-      <GltfModel :src="'/assets/models/PyramidSetup.gltf'" :position="{ x: 0, y: 0, z: 0 }" :rotation="{ x: 0, y: 0, z: 0 }" :scale="{ x: 1, y: 1, z: 1 }"  />
+      <GltfModel :src="'/assets/models/PyramidSetup.gltf'" @load="onLoad" />
     </Scene>
     <EffectComposer>
       <RenderPass />
@@ -89,6 +89,19 @@ export default {
     renderer.onBeforeRender(() => {
       light.position.copy(pointerV3);
     });
+  },
+  methods: {
+    onLoad(object) {
+      
+      object.traverse(function (child) {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+      
+      
+    }
   },
 };
 </script>
