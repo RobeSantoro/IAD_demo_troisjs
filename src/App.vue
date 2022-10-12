@@ -98,8 +98,7 @@ export default {
           child.castShadow = true;
           child.receiveShadow = true;
         }
-      });
-      
+      });      
       
     }
   },
